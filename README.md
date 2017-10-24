@@ -1,18 +1,18 @@
 # Introduction
 
-This is an introduction on how to setup a small development environment with NSO, including a couple of simulated devices and exercise the three NSO modules ( nso_action, nso_verify, ans nso_configure).
+This is an introduction on how to setup a small development environment with NSO and ansible, including a couple of simulated devices and exercise the three NSO modules (nso_action, nso_verify, ans nso_configure).
 
 # Preparing
 
-You need to have both the NSO and Ansible environments setup, meaning you need $NSO_DIR to point to an NSO installation and have ansible-playbook(1) in your $PATH.
+You need to have both the NSO and ansible environments setup, meaning you need $NSO_DIR to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
 
 You will need to working directories, one for the NSO runtime files as well, and one for the Ansible playbook content.
 
-If you are running the local fork of Ansible, you need to source `hacking/env-setup`. Please see `hacking/README.md` for more details.
+If you are running the local fork of Ansible, you need to source `hacking/env-setup`. Please see `hacking/README.md` in the ansible source for more details.
 
 ## Setting up NSO
 
-Use the ncs-netsim(1) tool to prepare to simulate a network consisting of three instances of simulated junos, cisco IOS-XE and cisco NX-OS respectively.
+Use the `ncs-netsim(1)` tool to prepare to simulate a network consisting of three instances of simulated junos, and cisco IOS-XE.
 
 ```
 ncs-netsim create-network juniper-junos 3 jnpr
@@ -53,36 +53,39 @@ ansible-doc nso_action
 
 And use Ansible to bring NSO in sync with the network:
 ```
-ansible-playbook -vvv sync-from.yaml
+ansible-playbook -v sync-from.yaml
 ```
 
-Now that we are in sync, we can start fetching data from NSO to use in our playbooks. The following three commands shows you how to fetch some configuration data from the `jnpr0` device, how to run the same data through the json2yaml tool producing the exact YAML output that can be used in the next step.
+Now that we are in sync, we can start fetching data from NSO to use in our playbooks. The following commands shows you how to fetch some configuration data from the `jnpr0` device, how to run the same data through the `json2yaml.py` tool producing the exact YAML output that can be used in the next step.
 
 ```
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep| ../json2yaml.py
 ```
 
-Paste into verify-device-tmpl.yaml under line with device name (remember indent).
+Paste the output into `verify-device-tmpl.yaml` under the line with the device name. Remember to indent correctly.
+
+You can then run the following to verify that the configuration indeed hasn't changed.
 
 ```
 ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
 ```
 
-Change the config and look at the delta.
+We can now make a change the configuration and run the verify playbook again and look at the delta. First we change the configuration of `jnpr0` through NSO the NSO CLI:
 
 ```
+admin@ncs% configure
 admin@ncs% set devices device jnpr0 config junos:configuration system domain-name baz.com
 admin@ncs% commit
 ```
 
-And then recheck to find the deviation.
+And then rerun the verify-playbook to find the deviation.
 
 ```
 ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
 ```
 
-Let's create the corresponding configuration template and enforce, paste buffer into configure-device-tmpl.yaml under line with device name (remember indent).
+Let's create the corresponding configuration template and enforce the configuration. Paste buffer into configure-device-tmpl.yaml under line with device name (remember indent).
 
 ```
 ansible-playbook -v configure-device-tmpl.yaml -e device=jnpr0
@@ -94,7 +97,12 @@ Recheck to make sure deviation is gone.
 ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
 ```
 
+That concludes this simple demo. Feel free to suggest additional steps.
+
 # Resetting the runtime environment
+
+Here are the steps to completely reset the runtime environment such that you can start fresh from the top of this demo.
+
 ```
 ncs --stop
 ncs-setup --reset
