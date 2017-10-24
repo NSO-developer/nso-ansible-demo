@@ -1,0 +1,26 @@
+- name: Verify device configuration
+  hosts: localhost
+  connection: local
+  gather_facts: no
+ 
+  tasks:
+  - name: NSO global variables
+    include_vars:
+      file: nso.yaml
+      name: nso
+
+  - name: Include device configuration
+    include_vars:
+      file: "{{ device }}_config.yaml"
+      name: data
+
+  - name: Verify configuration data
+    nso_verify:
+      url: "{{ nso.url }}"
+      username: "{{ nso.username }}"
+      password: "{{ nso.password }}"
+      data:
+        tailf-ncs:devices:
+          device:
+          - name: "{{ device }}"
+            tailf-ncs:config: "{{ data.top }}"

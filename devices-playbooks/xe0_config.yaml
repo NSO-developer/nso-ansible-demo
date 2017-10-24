@@ -1,0 +1,85 @@
+top:
+  tailf-ned-cisco-ios:class-map:
+  - name: a
+    prematch: match-all
+  - match:
+      mpls:
+        experimental:
+          topmost:
+          - '1'
+      packet:
+        length:
+          max: 255
+          min: 2
+      qos-group:
+      - '1'
+    name: cmap1
+    prematch: match-all
+  tailf-ned-cisco-ios:interface:
+    FastEthernet:
+    - name: 1/0
+    Loopback:
+    - name: '0'
+  tailf-ned-cisco-ios:ip:
+    community-list:
+      number-standard:
+      - 'no': 1
+        permit: {}
+      - deny: {}
+        'no': 2
+      standard:
+      - name: s
+        permit: {}
+    http:
+      secure-server: false
+      server: false
+    routing:
+    - null
+    source-route: true
+    vrf:
+    - bgp:
+        next-hop:
+          Loopback: 1
+      name: my-forward
+  tailf-ned-cisco-ios:mpls:
+    ip:
+      conf:
+        propagate-ttl: true
+  tailf-ned-cisco-ios:policy-map:
+  - name: a
+  - class:
+    - drop:
+      - null
+      estimate:
+        bandwidth:
+          delay-one-in:
+            doi: 500
+            milliseconds: 100
+      name: c1
+      priority:
+        percent: 33
+    name: map1
+  tailf-ned-cisco-ios:router:
+    bgp:
+    - aggregate-address:
+        address: 10.10.10.1
+        mask: 255.255.255.251
+      as-no: 64512
+      neighbor:
+      - ebgp-multihop:
+          max-hop: 3
+        id: 1.2.3.4
+        remote-as: 1
+      - activate:
+        - null
+        capability:
+          orf:
+            prefix-list:
+            - both
+        id: 2.3.4.5
+        remote-as: 1
+        weight: 300
+  tailf-ned-cisco-ios:spanning-tree:
+    optimize:
+      bpdu:
+        transmission: false

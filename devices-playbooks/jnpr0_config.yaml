@@ -1,0 +1,53 @@
+tailf-ncs:config:
+  junos:configuration:
+    interfaces:
+      interface:
+      - name: lo0
+        unit:
+        - family:
+            inet:
+              address:
+              - name: 192.168.1.1/32
+          name: 0
+      - name: xe-0/0/0
+        unit:
+        - family:
+            inet:
+              address:
+              - name: 10.10.1.1/24
+          name: 0
+      - name: xe-0/0/1
+        unit:
+        - family:
+            inet:
+              address:
+              - name: 10.10.2.1/24
+          name: 0
+      - name: xe-0/0/2
+        unit:
+        - family:
+            inet:
+              address:
+              - name: 10.10.8.6/24
+          name: 0
+    system:
+      domain-name: example.com
+      host-name: jnpr0
+      login:
+        message: This is jnpr0
+      name-server:
+      - name: 10.10.10.1
+      - name: 10.10.20.1
+      ntp:
+        server:
+        - name: 10.20.10.110
+        - name: 10.30.10.120
+      services:
+        netconf:
+          ssh: {}
+        ssh:
+          protocol-version:
+          - v2
+          root-login: deny
+      time-zone: UTC
+    version: 10.4R6

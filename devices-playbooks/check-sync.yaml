@@ -1,0 +1,19 @@
+---
+- name: Check-sync
+  hosts: localhost
+  connection: local
+  gather_facts: no
+ 
+  tasks:
+  - name: Load variables
+    include_vars:
+      file: nso.yaml
+      name: nso
+
+  - name: check-sync
+    nso_action:
+      url: "{{ nso.url }}"
+      username: "{{ nso.username }}"
+      password: "{{ nso.password }}"
+      path: /ncs:devices/check-sync
+      input: {}

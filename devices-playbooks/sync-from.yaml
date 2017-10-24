@@ -1,0 +1,19 @@
+- name: Sync-from
+  hosts: localhost
+  connection: local
+  gather_facts: no
+ 
+  tasks:
+  - name: Load variables
+    include_vars:
+      file: nso.yaml
+      name: nso
+
+  - name: Sync from
+    nso_action:
+      url: "{{ nso.url }}"
+      username: "{{ nso.username }}"
+      password: "{{ nso.password }}"
+      path: /ncs:devices/sync-from
+      input: {}
+
