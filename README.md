@@ -53,6 +53,7 @@ ansible-doc nso_action
 
 And use Ansible to bring NSO in sync with the network:
 ```
+cd devices-playbooks
 ansible-playbook -v sync-from.yaml
 ```
 
