@@ -2,13 +2,15 @@
 
 This is an introduction on how to setup a small development environment with NSO and ansible, including a couple of simulated devices and exercise the three NSO modules (nso_action, nso_verify, ans nso_configure).
 
+**NOTE WELL:** This demo obviously requires a version of Ansible that includes the three NSO modules. The patches to Ansible core are working their way through the upstream process, and you can follow the progress [here](https://github.com/ansible/ansible/pull/30973). In the meantime, feel free to reach out to [me](mailto:camoberg@cisco.com) and I will give you access to a copy of our local fork.
+
 # Preparing
 
-You need to have both the NSO and ansible environments setup, meaning you need $NSO_DIR to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
+You need to have both the NSO and ansible environments setup, meaning you need `$NSO_DIR` to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
 
 You will need to working directories, one for the NSO runtime files as well, and one for the Ansible playbook content.
 
-If you are running the local fork of Ansible, you need to source `hacking/env-setup`. Please see `hacking/README.md` in the ansible source for more details.
+If you are running a local fork of Ansible, you need to source `hacking/env-setup`. Please see `hacking/README.md` in the ansible source for more details.
 
 ## Setting up NSO
 
