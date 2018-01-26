@@ -1,0 +1,20 @@
+- name: Query
+  hosts: localhost
+  connection: local
+  gather_facts: no
+ 
+  tasks:
+  - name: Load variables
+    include_vars:
+      file: nso.yaml
+      name: nso
+
+  - name: Query devices including operational data
+    nso_query:
+      url: "{{ nso.url }}"
+      username: "{{ nso.username }}"
+      password: "{{ nso.password }}"
+      xpath: /ncs:devices/device
+      fields:
+      - name
+      - device-type
