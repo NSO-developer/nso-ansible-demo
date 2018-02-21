@@ -1,18 +1,19 @@
 # Introduction
 
-This is an introduction on how to setup a small development environment with NSO and ansible, including a couple of simulated devices and exercise the three NSO modules (nso_action, nso_verify, ans nso_configure).
+This is an introduction on how to setup a small development environment with NSO and ansible, including a couple of simulated devices and exercise the available NSO modules:
+- `nso_action` - to run actions in NSO
+- `nso_config` - to manage configuration through NSO
+- `nso_query` - to query the NSO data store
+- `nso_show` - to show subtree data from NSO data store
+- `nso_verify` - to verify configuration and operational data in NSO
 
-**NOTE WELL:** This demo obviously requires a version of Ansible that includes the three NSO modules. The patches to Ansible core are working their way through the upstream process, and you can follow the progress [here](https://github.com/ansible/ansible/pull/30973). In the meantime, feel free to reach out to [me](mailto:camoberg@cisco.com) and I will give you access to a copy of our local fork.
-
-# Preparing
+# Preparing and setting up NSO
 
 You need to have both the NSO and ansible environments setup, meaning you need `$NSO_DIR` to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
 
-You will need to working directories, one for the NSO runtime files as well, and one for the Ansible playbook content.
+You will need two working directories. One for the NSO runtime files, and one for executing the playbook content. The playbooks that we refer to below are all located in the `devices-playbooks` directory. So make sure you are in that directory when you run them.
 
-If you are running a local fork of Ansible, you need to source [`hacking/env-setup`](https://github.com/ansible/ansible/blob/devel/hacking/env-setup) . Please see [`hacking/README.md`](https://github.com/ansible/ansible/blob/devel/hacking/README.md) in the ansible source for more details.
-
-## Setting up NSO
+If you are running a local fork or clone of Ansible, you need to source [`hacking/env-setup`](https://github.com/ansible/ansible/blob/devel/hacking/env-setup). Please see [`hacking/README.md`](https://github.com/ansible/ansible/blob/devel/hacking/README.md) in the ansible source for more details.
 
 Use the `ncs-netsim(1)` tool to prepare to simulate a network consisting of three instances of simulated junos, and cisco IOS-XE.
 
@@ -22,85 +23,111 @@ ncs-netsim add-to-network cisco-ios 3 xe
 ncs-netsim start
 ```
 
-This creates all the required files for starting the simulated instances and starts the devices.
+This creates all the required files for starting the simulated instances and starts the devices. You can now log into the CLIs of the simulated device using the various `cli*` options to `ncs-netsim(1)`. Take a look at the manpage for more details.
 
 ```
 ncs-netsim cli-c xe0
 ncs-netsim cli jnpr0
 ```
 
-Next is to set up the local NSO runtime environment and start it.
+Next step is to set up the local NSO runtime environment and start it.
 
 ```
 ncs-setup --dest .
 ncs -v --foreground
 ```
 
-Start the NSO CLI in a separate terminal.
+Note that the `ncs-setup` command will pick up on the fact that it is being executed in an environment with netsim set up. It will pick up on the devices added to the netsim network and provide initial configuration in NSO to communicate with them.
+
+Start the NSO CLI in a separate terminal and take a look in the configuration subtree (the CLI path is `configuration devices device`) that represents the configuration of the devices under management.
 
 ```
 ncs_cli -u admin
-show configuration devices device
-show configuration devices <tab>
+admin@ncs> show configuration devices device
+admin@ncs> show configuration devices <tab>
 ```
 
-Quick look at the documentation for the modules:
+Quick look at the Ansible documentation for the modules:
 
 ```
 ansible-doc -l | grep nso_
-ansible-doc nso_config
-ansible-doc nso_verify
-ansible-doc nso_action
+nso_action       Executes Cisco NSO actions and verifies output.
+nso_config       Manage Cisco NSO configuration and service synchronization.
+nso_query        Query data from Cisco NSO.
+nso_show         Displays data from Cisco NSO.
+nso_verify       Verifies Cisco NSO configuration.
 ```
 
-And use Ansible to bring NSO in sync with the network:
+# The `nso_action` module
+
+You can now use the action module to bring NSO in sync with the network devices under management. The `sync-from.yaml` playbook uses the `nso_action` module to ask NSO to sync the configuration from all devices under management into the NSO data store.
+
 ```
-cd devices-playbooks
 ansible-playbook -v sync-from.yaml
 ```
 
-Now that we are in sync, we can start fetching data from NSO to use in our playbooks. The following commands shows you how to fetch some configuration data from the `jnpr0` device, how to run the same data through the `json2yaml.py` tool producing the exact YAML output that can be used in the next step.
+# The `nso_show` and `nso_query` modules
+
+Let's move on to use the show module to fetch configuration and operational data from the NSO data store and return it as a result of the operation. The module allows you to specify a path in NSO and return everything below that, with the option to exclude non-configuration (i.e. operational) data. The `device-show.yaml` playbook fetches all configuration from all devices, excludes operational data, displays it in JSON format.
+
+```
+ansible-playbook -v device-show.yaml
+```
+
+You can then use the query module on to use the show module to fetch configuration and operational data from the NSO data store and return it as a result of the operation. The `device-query.yaml` playbook uses an XPath query expression to fetch the name and NED type of all devices under management.
+
+```
+ansible-playbook -v device-query.yaml
+```
+
+# The `nso_verify` module
+
+Now that NSO in in sync, we can start fetching data to use in our playbooks. The following commands shows you how to use `curl(1)` to fetch some configuration data from the `jnpr0` device through NSO. And then how to run the same data through the `json2yaml.py` tool producing the exact YAML output that can be used in the next step where we verify that the configuration is the same.
 
 ```
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep| ../json2yaml.py
 ```
 
-Paste the output into `verify-device-tmpl.yaml` under the line with the device name. Remember to indent correctly.
+Paste the output into the template playbook `verify-device-tmpl.yaml` and put it under the line with the device name. Remember to indent correctly so you don't break the YAML whitespace.
 
-You can then run the following to verify that the configuration indeed hasn't changed.
+You can then run the verify playbook to verify that the configuration indeed has not changed.
 
 ```
 ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
 ```
 
-We can now make a change the configuration and run the verify playbook again and look at the delta. First we change the configuration of `jnpr0` through NSO the NSO CLI:
+You can now make a change the configuration and run the verify playbook again and look at the delta. First we change the configuration of `jnpr0` through the NSO CLI:
 
 ```
-admin@ncs% configure
+admin@ncs> configure
 admin@ncs% set devices device jnpr0 config junos:configuration system domain-name baz.com
 admin@ncs% commit
+admin@ncs% exit
+admin@ncs>
 ```
 
-And then rerun the verify-playbook to find the deviation.
+And then rerun the verify playbook to find the newly created deviation.
 
 ```
 ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
 ```
 
-Let's create the corresponding configuration template and enforce the configuration. Paste buffer into configure-device-tmpl.yaml under line with device name (remember indent).
+# The `nso_config` module
+
+You can now create the corresponding configuration template and enforce the configuration. Paste buffer into `configure-device-tmpl.yaml` under the line with device name (remember the indentation again).
 
 ```
 ansible-playbook -v configure-device-tmpl.yaml -e device=jnpr0
 ```
 
-Recheck to make sure deviation is gone.
+You can then recheck to make sure deviation is completely gone.
 
 ```
 ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
 ```
 
-That concludes this simple demo. Feel free to suggest additional steps.
+That concludes this simple demo. Feel free to suggest additional steps through raising [github repo](https://github.com/NSO-developer/nso-ansible-demo) [issues](https://github.com/NSO-developer/nso-ansible-demo/issues), or even better through submitting pull requests.
 
 # Resetting the runtime environment
 

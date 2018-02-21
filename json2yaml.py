@@ -23,7 +23,7 @@ def _utf8_encode(obj):
 def main():
     obj = json.load(sys.stdin)
     utf8_obj = _utf8_encode(obj)
-    yaml.dump({'top': utf8_obj}, stream=sys.stdout,
+    yaml.dump(utf8_obj, stream=sys.stdout,
               default_flow_style=False, explicit_start=False)
 
 
