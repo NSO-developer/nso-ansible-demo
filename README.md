@@ -7,6 +7,8 @@ This is an introduction on how to setup a small development environment with NSO
 - `nso_show` - to show subtree data from NSO data store
 - `nso_verify` - to verify configuration and operational data in NSO
 
+> Please not that the following demo and modules are in an as-of-yet unreleased version of Ansible. It is making its way into Ansible 2.5, but you will have to use the pre-release or a local clone until 2.5 is released. Please see the [Running From Source](http://docs.ansible.com/ansible/latest/intro_installation.html#running-from-source) section of the Ansible documentation on how to set this up. There are also 2.5 pre-releases available [here](https://github.com/ansible/ansible/releases).
+
 # Preparing and setting up NSO
 
 You need to have both the NSO and ansible environments setup, meaning you need `$NSO_DIR` to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
