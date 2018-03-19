@@ -41,6 +41,12 @@ ncs -v --foreground
 
 Note that the `ncs-setup` command will pick up on the fact that it is being executed in an environment with netsim set up. It will pick up on the devices added to the netsim network and provide initial configuration in NSO to communicate with them.
 
+The steps above can also be done using the `netsim` and `nso` targets in the local `Makefile`:
+
+```
+make netsim nso
+```
+
 Start the NSO CLI in a separate terminal and take a look in the configuration subtree (the CLI path is `configuration devices device`) that represents the configuration of the devices under management.
 
 ```
@@ -141,4 +147,9 @@ ncs-setup --reset
 ncs-netsim stop
 ncs-netsim delete-network
 rm -rf packages state target scripts logs ncs-cdb storedstate README.netsim README.ncs ncs.conf
+```
+
+This can also be done using the `clean` target in the `Makefile`.
+```
+make clean
 ```
