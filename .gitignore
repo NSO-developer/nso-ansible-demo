@@ -1,0 +1,13 @@
+*.retry
+README.ncs
+README.netsim
+logs/
+ncs-cdb/
+ncs-java-vm.log
+ncs-python-vm.log
+ncs.conf
+netsim/
+packages/
+state/
+storedstate
+

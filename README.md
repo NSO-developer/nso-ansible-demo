@@ -88,7 +88,7 @@ Now that NSO in in sync, we can start fetching data to use in our playbooks. The
 
 ```
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep
-curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep| ../json2yaml.py
+curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep | ../json2yaml.py
 ```
 
 Paste the output into the template playbook `verify-device-tmpl.yaml` and put it under the line with the device name. Remember to indent correctly so you don't break the YAML whitespace.

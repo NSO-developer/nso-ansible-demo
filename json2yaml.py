@@ -15,7 +15,8 @@ def _utf8_encode(obj):
     if type(obj) is dict:
         obj_dest = {}
         for key, value in obj.iteritems():
-            obj_dest[_utf8_encode(key)] = _utf8_encode(value)
+            if not 'EXEC' in key:
+                obj_dest[_utf8_encode(key)] = _utf8_encode(value)
         return obj_dest
     return obj
 
