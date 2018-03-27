@@ -7,15 +7,13 @@ This is an introduction on how to setup a small development environment with NSO
 - `nso_show` - to show subtree data from NSO data store
 - `nso_verify` - to verify configuration and operational data in NSO
 
-> Please not that the following demo and modules are in an as-of-yet unreleased version of Ansible. It is making its way into Ansible 2.5, but you will have to use the pre-release or a local clone until 2.5 is released. Please see the [Running From Source](http://docs.ansible.com/ansible/latest/intro_installation.html#running-from-source) section of the Ansible documentation on how to set this up. There are also 2.5 pre-releases available [here](https://github.com/ansible/ansible/releases).
+> Please note that the modules we are using in this demo was published with Ansible 2.5, so make sure you are using that version or later.
 
 # Preparing and setting up NSO
 
 You need to have both the NSO and ansible environments setup, meaning you need `$NSO_DIR` to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
 
 You will need two working directories. One for the NSO runtime files, and one for executing the playbook content. The playbooks that we refer to below are all located in the `devices-playbooks` directory. So make sure you are in that directory when you run them.
-
-If you are running a local fork or clone of Ansible, you need to source [`hacking/env-setup`](https://github.com/ansible/ansible/blob/devel/hacking/env-setup). Please see [`hacking/README.md`](https://github.com/ansible/ansible/blob/devel/hacking/README.md) in the ansible source for more details.
 
 Use the `ncs-netsim(1)` tool to prepare to simulate a network consisting of three instances of simulated junos, and cisco IOS-XE.
 
