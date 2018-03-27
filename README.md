@@ -76,16 +76,16 @@ ansible-playbook -v sync-from.yaml
 
 # The `nso_show` and `nso_query` modules
 
-Let's move on to use the show module to fetch configuration and operational data from the NSO data store and return it as a result of the operation. The module allows you to specify a path in NSO and return everything below that, with the option to exclude non-configuration (i.e. operational) data. The `device-show.yaml` playbook fetches all configuration from all devices, excludes operational data, displays it in JSON format.
+Let's move on to use the show module to fetch configuration and operational data from the NSO data store and return it as a result of the operation. The module allows you to specify a path in NSO and return everything below that, with the option to exclude non-configuration (i.e. operational) data. The `device-show.yaml` playbook fetches all configuration from all devices, excludes operational data, displays it in JSON format. We add two more verbose options (`-v`) to make sure we get the output JSON nicely formatted.
 
 ```
-ansible-playbook -v device-show.yaml
+ansible-playbook -vvv device-show.yaml
 ```
 
 You can then use the query module on to use the show module to fetch configuration and operational data from the NSO data store and return it as a result of the operation. The `device-query.yaml` playbook uses an XPath query expression to fetch the name and NED type of all devices under management.
 
 ```
-ansible-playbook -v device-query.yaml
+ansible-playbook -vvv device-query.yaml
 ```
 
 # The `nso_verify` module
@@ -123,7 +123,7 @@ ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
 
 # The `nso_config` module
 
-You can now create the corresponding configuration template and enforce the configuration. Paste buffer into `configure-device-tmpl.yaml` under the line with device name (remember the indentation again).
+You can now create the corresponding configuration template and enforce the configuration. Paste your buffer into `configure-device-tmpl.yaml` under the line with device name (and remember the indentation again).
 
 ```
 ansible-playbook -v configure-device-tmpl.yaml -e device=jnpr0
@@ -133,6 +133,12 @@ You can then recheck to make sure deviation is completely gone.
 
 ```
 ansible-playbook -v verify-device-tmpl.yaml -e device=jnpr0
+```
+
+You can also remove configuration by using the `__state: absent` construct. We can use this feature to completely remove one of the name-servers from the configuration. The `delete-name-server.yaml` contains a play to do exactly this.
+
+```
+ansible-playbook -v delete-name-server.yaml -e device=jnpr0
 ```
 
 That concludes this simple demo. Feel free to suggest additional steps through raising [github repo](https://github.com/NSO-developer/nso-ansible-demo) [issues](https://github.com/NSO-developer/nso-ansible-demo/issues), or even better through submitting pull requests.
