@@ -1,4 +1,4 @@
-ansible==2.5.0b2
+ansible==2.5.0
 asn1crypto==0.24.0
 bcrypt==3.1.4
 cffi==1.11.5
