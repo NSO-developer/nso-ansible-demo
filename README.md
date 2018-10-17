@@ -13,6 +13,8 @@ This is an introduction on how to setup a small development environment with NSO
 
 You need to have both the NSO and ansible environments setup, meaning you need `$NSO_DIR` to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
 
+NSO is available for free for lab and trials [on DevNet](https://developer.cisco.com/docs/nso/#!getting-nso).
+
 You will need two working directories. One for the NSO runtime files, and one for executing the playbook content. The playbooks that we refer to below are all located in the `devices-playbooks` directory. So make sure you are in that directory when you run them.
 
 Use the `ncs-netsim(1)` tool to prepare to simulate a network consisting of three instances of simulated junos, and cisco IOS-XE.
