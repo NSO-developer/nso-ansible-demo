@@ -95,7 +95,7 @@ Now that NSO in in sync, we can start fetching data to use in our playbooks. The
 ```
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep | ../json2yaml.py
-or with Python3
+or with Python3:
 curl -s -u admin:admin -H "Accept: application/vnd.yang.data+json" http://localhost:8080/api/config/devices/device/jnpr0/config?deep | ../json2yaml3.py
 ```
 
