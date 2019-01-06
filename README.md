@@ -11,7 +11,7 @@ This is an introduction on how to setup a small development environment with NSO
 
 # Preparing and setting up NSO
 
-You need to have both the NSO and ansible environments setup, meaning you need `$NSO_DIR` to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
+You need to have both the NSO and ansible environments setup, meaning you need `$NCS_DIR` to point to an NSO installation and have `ansible-playbook(1)` in your `$PATH`.
 
 NSO is available for free for lab and trials [on DevNet](https://developer.cisco.com/docs/nso/#!getting-nso).
 
